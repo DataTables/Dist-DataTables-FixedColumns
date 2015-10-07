@@ -1,0 +1,10 @@
+{
+    "css": [],
+    "js": [
+        "js/dataTables.fixedColumns.js",
+        "js/dataTables.fixedColumns.min.js"
+    ],
+    "src-repo": "http://github.com/DataTables/FixedColumns",
+    "last-sync": "fec8d65ce1cbf6f9d492e37cd6df905b3a4b4a59",
+    "last-tag": "3.1.0"
+}
