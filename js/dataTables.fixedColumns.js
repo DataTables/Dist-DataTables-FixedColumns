@@ -1,11 +1,11 @@
-/*! FixedColumns 3.1.0
+/*! FixedColumns 3.2.0-dev
  * ©2010-2014 SpryMedia Ltd - datatables.net/license
  */
 
 /**
  * @summary     FixedColumns
  * @description Freeze columns in place on a scrolling DataTable
- * @version     3.1.0
+ * @version     3.2.0-dev
  * @file        dataTables.fixedColumns.js
  * @author      SpryMedia Ltd (www.sprymedia.co.uk)
  * @contact     www.sprymedia.co.uk/contact
@@ -20,13 +20,35 @@
  *
  * For details please refer to: http://www.datatables.net
  */
+(function( factory ){
+	if ( typeof define === 'function' && define.amd ) {
+		// AMD
+		define( ['jquery', 'datatables.net'], function ( $ ) {
+			return factory( $, window, document );
+		} );
+	}
+	else if ( typeof exports === 'object' ) {
+		// CommonJS
+		module.exports = function (root, $) {
+			if ( ! root ) {
+				root = window;
+			}
 
+			if ( ! $ || ! $.fn.dataTable ) {
+				$ = require('datatables.net')(root, $).$;
+			}
 
-(function(window, document, undefined) {
+			return factory( $, root, root.document );
+		};
+	}
+	else {
+		// Browser
+		factory( jQuery, window, document );
+	}
+}(function( $, window, document, undefined ) {
+'use strict';
+var DataTable = $.fn.dataTable;
 
-
-var factory = function( $, DataTable ) {
-"use strict";
 
 /**
  * When making use of DataTables' x-axis scrolling feature, you may wish to
@@ -283,7 +305,7 @@ var FixedColumns = function ( dt, init ) {
 
 
 
-FixedColumns.prototype = /** @lends FixedColumns.prototype */{
+$.extend( FixedColumns.prototype , {
 	/* * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
 	 * Public methods
 	 * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * */
@@ -563,10 +585,12 @@ FixedColumns.prototype = /** @lends FixedColumns.prototype */{
 				that._fnColCalc();
 				that._fnGridLayout( that );
 			} )
-			.on( 'column-visibility.dt.DTFC', function () {
-				that._fnColCalc();
-				that._fnGridLayout( that );
-				that._fnDraw( true );
+			.on( 'column-visibility.dt.DTFC', function ( e, settings, column, vis, recalc ) {
+				if ( recalc === undefined || recalc ) {
+					that._fnColCalc();
+					that._fnGridLayout( that );
+					that._fnDraw( true );
+				}
 			} )
 			.on( 'destroy.dt.DTFC', function () {
 				jqTable.off( 'column-sizing.dt.DTFC column-visibility.dt.DTFC destroy.dt.DTFC draw.dt.DTFC' );
@@ -1291,7 +1315,7 @@ FixedColumns.prototype = /** @lends FixedColumns.prototype */{
 			anOriginal[i].style.height = heights[i]+"px";
 		}
 	}
-};
+} );
 
 
 
@@ -1387,7 +1411,7 @@ FixedColumns.defaults = /** @lends FixedColumns.defaults */{
  *  @default   See code
  *  @static
  */
-FixedColumns.version = "3.1.0";
+FixedColumns.version = "3.2.0-dev";
 
 
 
@@ -1491,22 +1515,4 @@ $.fn.dataTable.FixedColumns = FixedColumns;
 $.fn.DataTable.FixedColumns = FixedColumns;
 
 return FixedColumns;
-}; // /factory
-
-
-// Define as an AMD module if possible
-if ( typeof define === 'function' && define.amd ) {
-	define( ['jquery', 'datatables'], factory );
-}
-else if ( typeof exports === 'object' ) {
-    // Node/CommonJS
-    factory( require('jquery'), require('datatables') );
-}
-else if ( jQuery && !jQuery.fn.dataTable.FixedColumns ) {
-	// Otherwise simply initialise as normal, stopping multiple evaluation
-	factory( jQuery, jQuery.fn.dataTable );
-}
-
-
-})(window, document);
-
+}));
