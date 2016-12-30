@@ -1,6 +1,6 @@
 # FixedColumns for DataTables 
 
-This package contains distribution files for the [FixedColumns extension](https://datatables.net/extensions/fixedcolumns) for [DataTables](https://datatables.net/). Only the core software for this library is contained in this package - to be correctly styled, a styling package for FixedColumns must also be included. Styling options include DataTable's native styling, [Bootstrap](http://getboostrap.com) and [Foundation](http://foundation.zurb.com/).
+This package contains distribution files for the [FixedColumns extension](https://datatables.net/extensions/fixedcolumns) for [DataTables](https://datatables.net/). Only the core software for this library is contained in this package - to be correctly styled, a styling package for FixedColumns must also be included. Styling options include DataTable's native styling, [Bootstrap](http://getbootstrap.com) and [Foundation](http://foundation.zurb.com/).
 
 FixedColumns provides the ability to fix one or more columns to the left and / or right hand side of a DataTable that scrolls along the x-axis. This can be used if the columns show grouping, index or similar information.
 
