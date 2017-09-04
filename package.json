@@ -3,7 +3,7 @@
     "version": "3.2.2",
     "description": "FixedColumns for DataTables ",
     "files": [
-        "js/dataTables.fixedColumns.js"
+        "js/**/*.js"
     ],
     "main": "./js/dataTables.fixedColumns.js",
     "keywords": [
