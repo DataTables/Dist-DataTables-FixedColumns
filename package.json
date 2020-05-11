@@ -1,6 +1,6 @@
 {
     "name": "datatables.net-fixedcolumns",
-    "version": "3.3.0",
+    "version": "3.3.1",
     "description": "FixedColumns for DataTables ",
     "files": [
         "js/**/*.js"
