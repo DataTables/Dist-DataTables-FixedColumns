@@ -1,25 +1,30 @@
-
 {
-	"name": "datatables.net/datatables.net-fixedcolumns",
-	"version": "3.3.1",
-	"description": "DataTables is a plug-in for the jQuery Javascript library. It is a highly flexible tool, based upon the foundations of progressive enhancement, which will add advanced interaction controls to any HTML table. This is the FixedColumns extension for DataTables.", 
-	"homepage": "http://www.datatables.net/",
-	"authors": [{
-		"name": "SpryMedia",
-		"homepage": "https://datatables.net"
-	}], 
-	"license": [
-		"MIT"
-	],
+    "version": "3.3.2",
+    "name": "datatables.net/datatables.net-fixedcolumns",
+    "description": "FixedColumns provides the ability to fix one or more columns to the left and / or right hand side of a DataTable that scrolls along the x-axis. This can be used if the columns show grouping, index or similar information. This is FixedColumns for DataTables",
+    "support": {
+        "forum": "https://datatables.net/forums",
+        "source": "https://github.com/DataTables/Dist-DataTables-FixedColumns"
+    },
+    "homepage": "http://www.datatables.net/",
+    "authors": [
+        {
+            "name": "SpryMedia",
+            "homepage": "https://datatables.net"
+        }
+    ],
+    "license": [
+        "MIT"
+    ],
     "prefer-stable": true,
     "minimum-stability": "dev",
-	"support": {
-		"forum": "https://datatables.net/forums",
-		"source": "https://github.com/DataTables/Dist-DataTables-FixedColumns/"
-    },
-    "keywords": ["DataTables", "jQuery", "table", "fixedcolumns"],
+    "keywords": [
+        "FixedColumns",
+        "Datatables",
+        "jQuery",
+        "table"
+    ],
     "require": {
-        "components/jquery":">=3.5.1",
-        "datatables.net/datatables.net":">=1.10.15"
+        "datatables.net/datatables.net": ">=1.10.24"
     }
 }
