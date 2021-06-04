@@ -3,7 +3,7 @@
     "description": "FixedColumns for DataTables",
     "main": "js/dataTables.fixedColumns.js",
     "types": "./types/types.d.ts",
-    "version": "3.3.2",
+    "version": "3.3.3",
     "files": [
         "js/**/*.js"
     ],
@@ -16,8 +16,8 @@
         "sort"
     ],
     "dependencies": {
-        "datatables.net": ">=1.10.24",
-        "jquery": ">=1.7"
+        "jquery": ">=1.7",
+        "datatables.net": "^1.10.15"
     },
     "moduleType": [
         "globals",
