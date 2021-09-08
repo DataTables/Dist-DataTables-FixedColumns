@@ -35,7 +35,7 @@
                 rtl: $(table.table().node()).css('direction') === 'rtl'
             };
             // Set the bar width if vertical scrolling is enabled
-            if (this.s.dt.init().scrollY !== false) {
+            if (this.s.dt.settings()[0].oInit.scrollY === true) {
                 this.s.barWidth = this.s.dt.settings()[0].oBrowser.barWidth;
             }
             // Common CSS for all blockers
@@ -127,7 +127,7 @@
             if (header !== null) {
                 header = $(header);
                 headerHeight = header.outerHeight() + 1;
-                parentDiv = $(header.closest('div.dataTables_scroll')).css({ position: 'relative' });
+                parentDiv = $(header.closest('div.dataTables_scroll')).css('position', 'relative');
             }
             // Get the footer and it's height
             var footer = this.s.dt.column(0).footer();
@@ -137,7 +137,7 @@
                 footerHeight = footer.outerHeight();
                 // Only attempt to retrieve the parentDiv if it has not been retrieved already
                 if (parentDiv === null) {
-                    parentDiv = $(footer.closest('div.dataTables_scroll')).css({ position: 'relative' });
+                    parentDiv = $(footer.closest('div.dataTables_scroll')).css('position', 'relative');
                 }
             }
             // Get the number of columns in the table - this is used often so better to only make 1 api call
@@ -376,7 +376,7 @@
         };
         FixedColumns.prototype._setKeyTableListener = function () {
             var _this = this;
-            this.s.dt.on('key-focus', function (e, dt, cell, originalEvent) {
+            this.s.dt.on('key-focus', function (e, dt, cell) {
                 var cellPos = $(cell.node()).offset();
                 var scroll = $($(_this.s.dt.table().node()).closest('div.dataTables_scrollBody'));
                 // If there are fixed columns to the left
@@ -520,10 +520,9 @@
                     _init(dt.settings(), config);
                 }
                 $(node).attr('active', true).addClass('active');
-                var message = dt.i18n('fixedColumns.button', dt.settings()[0]._fixedColumns.c.i18n.button);
-                dt.button(node).text(message);
+                dt.button(node).text(config.text || dt.i18n('buttons.fixedColumns', dt.settings()[0]._fixedColumns.c.i18n.button));
             },
-            text: 'FixedColumns'
+            text: null
         };
         function _init(settings, options) {
             if (options === void 0) { options = null; }
@@ -536,7 +535,7 @@
         }
         // Attach a listener to the document which listens for DataTables initialisation
         // events so we can automatically initialise
-        $(document).on('init.dt.dtfc', function (e, settings, json) {
+        $(document).on('init.dt.dtfc', function (e, settings) {
             if (e.namespace !== 'dt') {
                 return;
             }
