@@ -159,6 +159,8 @@
                 var colFooter = $(column.footer());
                 // If i is less than the value of left then this column should be fixed left
                 if (i < this.c.left) {
+                    $(this.s.dt.table().node()).addClass(this.classes.tableFixedLeft);
+                    parentDiv.addClass(this.classes.tableFixedLeft);
                     // Add the width of the previous node - only if we are on atleast the second column
                     if (i !== 0) {
                         var prevCol = this.s.dt.column(i - 1);
@@ -241,6 +243,8 @@
                     continue;
                 }
                 if (i >= numCols - this.c.right) {
+                    $(this.s.dt.table().node()).addClass(this.classes.tableFixedRight);
+                    parentDiv.addClass(this.classes.tableFixedLeft);
                     // Add the widht of the previous node, only if we are on atleast the second column
                     if (i !== numCols - 1) {
                         var prevCol = this.s.dt.column(i + 1);
@@ -427,7 +431,9 @@
             leftBottomBlocker: 'dtfc-left-bottom-blocker',
             leftTopBlocker: 'dtfc-left-top-blocker',
             rightBottomBlocker: 'dtfc-right-bottom-blocker',
-            rightTopBlocker: 'dtfc-right-top-blocker'
+            rightTopBlocker: 'dtfc-right-top-blocker',
+            tableFixedLeft: 'dtfc-has-left',
+            tableFixedRight: 'dtfc-has-right'
         };
         FixedColumns.defaults = {
             i18n: {
