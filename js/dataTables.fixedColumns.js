@@ -1,5 +1,5 @@
 /*! FixedColumns 4.0.0
- * 2019-2020 SpryMedia Ltd - datatables.net/license
+ * 2019-2021 SpryMedia Ltd - datatables.net/license
  */
 (function () {
     'use strict';
@@ -34,10 +34,6 @@
                 dt: table,
                 rtl: $(table.table().node()).css('direction') === 'rtl'
             };
-            // Set the bar width if vertical scrolling is enabled
-            if (this.s.dt.settings()[0].oInit.scrollY === true) {
-                this.s.barWidth = this.s.dt.settings()[0].oBrowser.barWidth;
-            }
             // Common CSS for all blockers
             var blockerCSS = {
                 'background-color': 'white',
@@ -120,6 +116,21 @@
          * Iterates over the columns, fixing the appropriate ones to the left and right
          */
         FixedColumns.prototype._addStyles = function () {
+            // Set the bar width if vertical scrolling is enabled
+            if (this.s.dt.settings()[0].oScroll.sY) {
+                var scroll_1 = $(this.s.dt.table().node()).closest('div.dataTables_scrollBody')[0];
+                var barWidth = this.s.dt.settings()[0].oBrowser.barWidth;
+                if (scroll_1.offsetWidth - scroll_1.clientWidth >= barWidth) {
+                    this.s.barWidth = barWidth;
+                }
+                else {
+                    this.s.barWidth = 0;
+                }
+                this.dom.rightTopBlocker.css('width', this.s.barWidth + 1);
+                this.dom.leftTopBlocker.css('width', this.s.barWidth + 1);
+                this.dom.rightBottomBlocker.css('width', this.s.barWidth + 1);
+                this.dom.leftBottomBlocker.css('width', this.s.barWidth + 1);
+            }
             var parentDiv = null;
             // Get the header and it's height
             var header = this.s.dt.column(0).header();
@@ -446,7 +457,7 @@
     }());
 
     /*! FixedColumns 4.0.0
-     * 2019-2020 SpryMedia Ltd - datatables.net/license
+     * 2019-2021 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
     // (with window and jQuery being allowed as parameters to the returned
