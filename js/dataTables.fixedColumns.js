@@ -243,16 +243,11 @@
                 }
             }
             var distRight = 0;
-            invisibles = 0;
             for (var i = numCols - 1; i >= 0; i--) {
                 var column = this.s.dt.column(i);
                 // Get the columns header and footer element
                 var colHeader = $(column.header());
                 var colFooter = $(column.footer());
-                if (!column.visible()) {
-                    invisibles++;
-                    continue;
-                }
                 if (i >= numCols - this.c.right) {
                     $(this.s.dt.table().node()).addClass(this.classes.tableFixedRight);
                     parentDiv.addClass(this.classes.tableFixedLeft);
@@ -266,7 +261,7 @@
                     // Iterate over all of the rows, fixing the cell to the right
                     for (var _b = 0, rows_3 = rows; _b < rows_3.length; _b++) {
                         var row = rows_3[_b];
-                        $($(row).children()[i + invisibles])
+                        $($(row).children()[i - invisibles])
                             .css(this._getCellCSS(false, distRight, 'right'))
                             .addClass(this.classes.fixedRight);
                     }
@@ -282,7 +277,7 @@
                     // Iteriate through all of the rows, making sure they aren't currently trying to fix right
                     for (var _c = 0, rows_4 = rows; _c < rows_4.length; _c++) {
                         var row = rows_4[_c];
-                        var cell = $($(row).children()[i + invisibles]);
+                        var cell = $($(row).children()[i - invisibles]);
                         // If the cell is trying to fix to the right, remove the class and the css
                         if (cell.hasClass(this.classes.fixedRight)) {
                             cell
