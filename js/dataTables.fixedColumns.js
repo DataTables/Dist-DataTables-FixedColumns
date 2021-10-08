@@ -1,4 +1,4 @@
-/*! FixedColumns 4.0.0
+/*! FixedColumns 4.0.1-dev
  * 2019-2021 SpryMedia Ltd - datatables.net/license
  */
 (function () {
@@ -83,7 +83,7 @@
             return this;
         }
         /**
-         * Getter/Setter for the fixedColumns.left property
+         * Getter/Setter for the `fixedColumns.left` property
          *
          * @param newVal Optional. If present this will be the new value for the number of left fixed columns
          * @returns The number of left fixed columns
@@ -98,7 +98,7 @@
             return this.c.left;
         };
         /**
-         * Getter/Setter for the fixedColumns.left property
+         * Getter/Setter for the `fixedColumns.left` property
          *
          * @param newVal Optional. If present this will be the new value for the number of right fixed columns
          * @returns The number of right fixed columns
@@ -427,10 +427,12 @@
                 _this._addStyles();
             });
             this.s.dt.on('column-visibility', function () {
-                _this._addStyles();
+                setTimeout(function () {
+                    _this._addStyles();
+                }, 50);
             });
         };
-        FixedColumns.version = '4.0.0';
+        FixedColumns.version = '4.0.1-dev';
         FixedColumns.classes = {
             fixedLeft: 'dtfc-fixed-left',
             fixedRight: 'dtfc-fixed-right',
@@ -451,7 +453,7 @@
         return FixedColumns;
     }());
 
-    /*! FixedColumns 4.0.0
+    /*! FixedColumns 4.0.1-dev
      * 2019-2021 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
