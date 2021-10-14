@@ -155,6 +155,8 @@
             var numCols = this.s.dt.columns().data().toArray().length;
             // Tracker for the number of pixels should be left to the left of the table
             var distLeft = 0;
+            // Sometimes the headers have slightly different widths so need to track them individually
+            var headLeft = 0;
             // Get all of the row elements in the table
             var rows = $(this.s.dt.table().node()).children('tbody').children('tr');
             var invisibles = 0;
@@ -184,6 +186,11 @@
                         var prevCol = this.s.dt.column(i - 1 - invisibles, { page: 'current' });
                         if (prevCol.visible()) {
                             distLeft += $(prevCol.nodes()[0]).outerWidth();
+                            headLeft += headLeft += prevCol.header() ?
+                                $(prevCol.header()).outerWidth() :
+                                prevCol.footer() ?
+                                    $(prevCol.header()).outerWidth() :
+                                    0;
                         }
                     }
                     // Iterate over all of the rows, fixing the cell to the left
@@ -195,10 +202,10 @@
                     }
                     // Add the css for the header and the footer
                     colHeader
-                        .css(this._getCellCSS(true, distLeft, 'left'))
+                        .css(this._getCellCSS(true, headLeft, 'left'))
                         .addClass(this.classes.fixedLeft);
                     colFooter
-                        .css(this._getCellCSS(true, distLeft, 'left'))
+                        .css(this._getCellCSS(true, headLeft, 'left'))
                         .addClass(this.classes.fixedLeft);
                 }
                 else {
@@ -250,6 +257,7 @@
                 }
             }
             var distRight = 0;
+            var headRight = 0;
             // Counter for the number of invisible columns so far
             var rightInvisibles = 0;
             for (var i = numCols - 1; i >= 0; i--) {
@@ -272,10 +280,15 @@
                     $(this.s.dt.table().node()).addClass(this.classes.tableFixedRight);
                     parentDiv.addClass(this.classes.tableFixedRight);
                     // Add the widht of the previous node, only if we are on atleast the second column
-                    if (i !== numCols - 1) {
+                    if (i + 1 + rightInvisibles < numCols) {
                         var prevCol = this.s.dt.column(i + 1 + rightInvisibles, { page: 'current' });
                         if (prevCol.visible()) {
                             distRight += $(prevCol.nodes()[0]).outerWidth();
+                            headRight += prevCol.header() ?
+                                $(prevCol.header()).outerWidth() :
+                                prevCol.footer() ?
+                                    $(prevCol.header()).outerWidth() :
+                                    0;
                         }
                     }
                     // Iterate over all of the rows, fixing the cell to the right
@@ -287,10 +300,10 @@
                     }
                     // Add the css for the header and the footer
                     colHeader
-                        .css(this._getCellCSS(true, distRight, 'right'))
+                        .css(this._getCellCSS(true, headRight, 'right'))
                         .addClass(this.classes.fixedRight);
                     colFooter
-                        .css(this._getCellCSS(true, distRight, 'right'))
+                        .css(this._getCellCSS(true, headRight, 'right'))
                         .addClass(this.classes.fixedRight);
                 }
                 else {
