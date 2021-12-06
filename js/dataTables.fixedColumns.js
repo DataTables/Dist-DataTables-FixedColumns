@@ -78,6 +78,7 @@
                     _this._setKeyTableListener();
                 });
             }
+            table.on('column-sizing.dt', function () { return _this._addStyles(); });
             // Make class available through dt object
             table.settings()[0]._fixedColumns = this;
             return this;
