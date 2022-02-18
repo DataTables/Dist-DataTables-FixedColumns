@@ -1,5 +1,5 @@
-/*! FixedColumns 4.0.1
- * 2019-2021 SpryMedia Ltd - datatables.net/license
+/*! FixedColumns 4.0.2
+ * 2019-2022 SpryMedia Ltd - datatables.net/license
  */
 (function () {
     'use strict';
@@ -482,7 +482,7 @@
                 }
             });
         };
-        FixedColumns.version = '4.0.1';
+        FixedColumns.version = '4.0.2';
         FixedColumns.classes = {
             fixedLeft: 'dtfc-fixed-left',
             fixedRight: 'dtfc-fixed-right',
@@ -503,8 +503,8 @@
         return FixedColumns;
     }());
 
-    /*! FixedColumns 4.0.1
-     * 2019-2021 SpryMedia Ltd - datatables.net/license
+    /*! FixedColumns 4.0.2
+     * 2019-2022 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
     // (with window and jQuery being allowed as parameters to the returned
