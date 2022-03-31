@@ -1,5 +1,5 @@
-/*! FixedColumns 4.0.0
- * 2019-2021 SpryMedia Ltd - datatables.net/license
+/*! FixedColumns 4.0.2
+ * 2019-2022 SpryMedia Ltd - datatables.net/license
  */
 import FixedColumns, { setJQuery as fixedColumnsJQuery } from './FixedColumns';
 // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
@@ -95,7 +95,7 @@ import FixedColumns, { setJQuery as fixedColumnsJQuery } from './FixedColumns';
     }
     // Attach a listener to the document which listens for DataTables initialisation
     // events so we can automatically initialise
-    $(document).on('init.dt.dtfc', function (e, settings) {
+    $(document).on('plugin-init.dt', function (e, settings) {
         if (e.namespace !== 'dt') {
             return;
         }

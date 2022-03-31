@@ -45,14 +45,14 @@ export default class FixedColumns {
     s: IS;
     constructor(settings: any, opts: IDefaults);
     /**
-     * Getter/Setter for the fixedColumns.left property
+     * Getter/Setter for the `fixedColumns.left` property
      *
      * @param newVal Optional. If present this will be the new value for the number of left fixed columns
      * @returns The number of left fixed columns
      */
     left(newVal?: number): number;
     /**
-     * Getter/Setter for the fixedColumns.left property
+     * Getter/Setter for the `fixedColumns.left` property
      *
      * @param newVal Optional. If present this will be the new value for the number of right fixed columns
      * @returns The number of right fixed columns
