@@ -36,7 +36,6 @@
             };
             // Common CSS for all blockers
             var blockerCSS = {
-                'background-color': 'white',
                 'bottom': '0px',
                 'display': 'block',
                 'position': 'absolute',
