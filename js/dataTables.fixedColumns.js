@@ -474,8 +474,8 @@
             this.s.dt.on('column-reorder', function () {
                 _this._addStyles();
             });
-            this.s.dt.on('column-visibility', function (e, s) {
-                if (!s.bDestroying) {
+            this.s.dt.on('column-visibility', function (e, settings, column, state, recalc) {
+                if (recalc && !settings.bDestroying) {
                     setTimeout(function () {
                         _this._addStyles();
                     }, 50);
