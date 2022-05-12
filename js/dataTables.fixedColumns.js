@@ -1,4 +1,4 @@
-/*! FixedColumns 4.0.2
+/*! FixedColumns 4.1.0
  * 2019-2022 SpryMedia Ltd - datatables.net/license
  */
 (function () {
@@ -481,7 +481,7 @@
                 }
             });
         };
-        FixedColumns.version = '4.0.2';
+        FixedColumns.version = '4.1.0';
         FixedColumns.classes = {
             fixedLeft: 'dtfc-fixed-left',
             fixedRight: 'dtfc-fixed-right',
@@ -502,7 +502,7 @@
         return FixedColumns;
     }());
 
-    /*! FixedColumns 4.0.2
+    /*! FixedColumns 4.1.0
      * 2019-2022 SpryMedia Ltd - datatables.net/license
      */
     // DataTables extensions common UMD. Note that this allows for AMD, CommonJS
