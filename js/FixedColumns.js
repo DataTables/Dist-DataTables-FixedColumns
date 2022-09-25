@@ -26,11 +26,10 @@ var FixedColumns = /** @class */ (function () {
         this.s = {
             barWidth: 0,
             dt: table,
-            rtl: $(table.table().node()).css('direction') === 'rtl'
+            rtl: $('body').css('direction') === 'rtl'
         };
         // Common CSS for all blockers
         var blockerCSS = {
-            'background-color': 'white',
             'bottom': '0px',
             'display': 'block',
             'position': 'absolute',
@@ -374,25 +373,25 @@ var FixedColumns = /** @class */ (function () {
      */
     FixedColumns.prototype._getCellCSS = function (header, dist, lr) {
         if (lr === 'left') {
-            return !this.s.rtl ?
-                {
+            return this.s.rtl
+                ? {
+                    position: 'sticky',
+                    right: dist + 'px'
+                }
+                : {
                     left: dist + 'px',
                     position: 'sticky'
-                } :
-                {
-                    position: 'sticky',
-                    right: dist + (header ? this.s.barWidth : 0) + 'px'
                 };
         }
         else {
-            return !this.s.rtl ?
-                {
+            return this.s.rtl
+                ? {
+                    left: dist + (header ? this.s.barWidth : 0) + 'px',
+                    position: 'sticky'
+                }
+                : {
                     position: 'sticky',
                     right: dist + (header ? this.s.barWidth : 0) + 'px'
-                } :
-                {
-                    left: dist + 'px',
-                    position: 'sticky'
                 };
         }
     };
@@ -468,15 +467,15 @@ var FixedColumns = /** @class */ (function () {
         this.s.dt.on('column-reorder', function () {
             _this._addStyles();
         });
-        this.s.dt.on('column-visibility', function (e, s) {
-            if (!s.bDestroying) {
+        this.s.dt.on('column-visibility', function (e, settings, column, state, recalc) {
+            if (recalc && !settings.bDestroying) {
                 setTimeout(function () {
                     _this._addStyles();
                 }, 50);
             }
         });
     };
-    FixedColumns.version = '4.0.2';
+    FixedColumns.version = '4.1.0';
     FixedColumns.classes = {
         fixedLeft: 'dtfc-fixed-left',
         fixedRight: 'dtfc-fixed-right',
