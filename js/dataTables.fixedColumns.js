@@ -282,28 +282,6 @@ var DataTable = $.fn.dataTable;
                     }
                 }
             }
-            // If there is a header with the index class and reading rtl then add left top blocker
-            if (header !== null && !header.hasClass('index')) {
-                if (this.s.rtl) {
-                    this.dom.leftTopBlocker.outerHeight(headerHeight);
-                    parentDiv.append(this.dom.leftTopBlocker);
-                }
-                else {
-                    this.dom.rightTopBlocker.outerHeight(headerHeight);
-                    parentDiv.append(this.dom.rightTopBlocker);
-                }
-            }
-            // If there is a footer with the index class and reading rtl then add left bottom blocker
-            if (footer !== null && !footer.hasClass('index')) {
-                if (this.s.rtl) {
-                    this.dom.leftBottomBlocker.outerHeight(footerHeight);
-                    parentDiv.append(this.dom.leftBottomBlocker);
-                }
-                else {
-                    this.dom.rightBottomBlocker.outerHeight(footerHeight);
-                    parentDiv.append(this.dom.rightBottomBlocker);
-                }
-            }
             var distRight = 0;
             var headRight = 0;
             // Counter for the number of invisible columns so far
