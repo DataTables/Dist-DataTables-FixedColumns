@@ -565,7 +565,7 @@ import DataTable from 'datatables.net';
         }
     });
 
-})();
+}());
 
 
 export default DataTable;
