@@ -1,5 +1,4 @@
-
-/*! FixedColumns 4.2.0
+/*! FixedColumns 4.2.1
  * 2019-2022 SpryMedia Ltd - datatables.net/license
  */
 
@@ -500,7 +499,7 @@ var DataTable = $.fn.dataTable;
                 }
             });
         };
-        FixedColumns.version = '4.2.0';
+        FixedColumns.version = '4.2.1';
         FixedColumns.classes = {
             fixedLeft: 'dtfc-fixed-left',
             fixedRight: 'dtfc-fixed-right',
@@ -521,7 +520,7 @@ var DataTable = $.fn.dataTable;
         return FixedColumns;
     }());
 
-    /*! FixedColumns 4.2.0
+    /*! FixedColumns 4.2.1
      * 2019-2022 SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
