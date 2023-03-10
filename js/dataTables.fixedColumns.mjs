@@ -1,10 +1,9 @@
-/*! FixedColumns 4.2.1
- * 2019-2022 SpryMedia Ltd - datatables.net/license
+/*! FixedColumns 4.2.2
+ * © SpryMedia Ltd - datatables.net/license
  */
 
 import $ from 'jquery';
 import DataTable from 'datatables.net';
-
 
 (function () {
     'use strict';
@@ -464,7 +463,7 @@ import DataTable from 'datatables.net';
                 }
             });
         };
-        FixedColumns.version = '4.2.1';
+        FixedColumns.version = '4.2.2';
         FixedColumns.classes = {
             fixedLeft: 'dtfc-fixed-left',
             fixedRight: 'dtfc-fixed-right',
@@ -485,8 +484,8 @@ import DataTable from 'datatables.net';
         return FixedColumns;
     }());
 
-    /*! FixedColumns 4.2.1
-     * 2019-2022 SpryMedia Ltd - datatables.net/license
+    /*! FixedColumns 4.2.2
+     * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
     $.fn.dataTable.FixedColumns = FixedColumns;
