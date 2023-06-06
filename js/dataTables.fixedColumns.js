@@ -1,4 +1,4 @@
-/*! FixedColumns 4.2.2
+/*! FixedColumns 4.3.0-dev
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -511,7 +511,7 @@ var DataTable = $.fn.dataTable;
                 }
             });
         };
-        FixedColumns.version = '4.2.2';
+        FixedColumns.version = '4.3.0-dev';
         FixedColumns.classes = {
             fixedLeft: 'dtfc-fixed-left',
             fixedRight: 'dtfc-fixed-right',
@@ -532,7 +532,7 @@ var DataTable = $.fn.dataTable;
         return FixedColumns;
     }());
 
-    /*! FixedColumns 4.2.2
+    /*! FixedColumns 4.3.0-dev
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
