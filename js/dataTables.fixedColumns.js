@@ -130,33 +130,27 @@ var DataTable = $.fn.dataTable;
             table.on('destroy', function () { return _this._destroy(); });
             return this;
         }
-        /**
-         * Getter/Setter for the `fixedColumns.left` property
-         *
-         * @param newVal Optional. If present this will be the new value for the number of left fixed columns
-         * @returns The number of left fixed columns
-         */
         FixedColumns.prototype.left = function (newVal) {
             // If the value is to change
             if (newVal !== undefined) {
-                // Set the new values and redraw the columns
-                this.c.left = newVal;
-                this._addStyles();
+                if (newVal >= 0 && newVal <= this.s.dt.columns().count()) {
+                    // Set the new values and redraw the columns
+                    this.c.left = newVal;
+                    this._addStyles();
+                }
+                return this;
             }
             return this.c.left;
         };
-        /**
-         * Getter/Setter for the `fixedColumns.left` property
-         *
-         * @param newVal Optional. If present this will be the new value for the number of right fixed columns
-         * @returns The number of right fixed columns
-         */
         FixedColumns.prototype.right = function (newVal) {
             // If the value is to change
             if (newVal !== undefined) {
-                // Set the new values and redraw the columns
-                this.c.right = newVal;
-                this._addStyles();
+                if (newVal >= 0 && newVal <= this.s.dt.columns().count()) {
+                    // Set the new values and redraw the columns
+                    this.c.right = newVal;
+                    this._addStyles();
+                }
+                return this;
             }
             return this.c.right;
         };

@@ -45,19 +45,33 @@ export default class FixedColumns {
     s: IS;
     constructor(settings: any, opts: IDefaults);
     /**
-     * Getter/Setter for the `fixedColumns.left` property
+     * Getter for the `fixedColumns.left` property
      *
      * @param newVal Optional. If present this will be the new value for the number of left fixed columns
      * @returns The number of left fixed columns
      */
-    left(newVal?: number): number;
+    left(): number;
     /**
-     * Getter/Setter for the `fixedColumns.left` property
+     * Setter for the `fixedColumns.left` property
      *
-     * @param newVal Optional. If present this will be the new value for the number of right fixed columns
-     * @returns The number of right fixed columns
+     * @param newVal The new value for the number of left fixed columns
+     * @returns DataTables API for chaining
      */
-    right(newVal?: number): number;
+    left(newVal: number): any;
+    /**
+     * Getter for the `fixedColumns.left` property
+     *
+     * @param newVal Optional. If present this will be the new value for the number of left fixed columns
+     * @returns The number of left fixed columns
+     */
+    right(): number;
+    /**
+     * Setter for the `fixedColumns.right` property
+     *
+     * @param newVal The new value for the number of right fixed columns
+     * @returns DataTables API for chaining
+     */
+    right(newVal: number): any;
     /**
      * Iterates over the columns, fixing the appropriate ones to the left and right
      */
