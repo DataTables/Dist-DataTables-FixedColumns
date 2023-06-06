@@ -63,6 +63,10 @@ export default class FixedColumns {
      */
     private _addStyles;
     /**
+     * Clean up
+     */
+    private _destroy;
+    /**
      * Gets the correct CSS for the cell, header or footer based on options provided
      *
      * @param header Whether this cell is a header or a footer

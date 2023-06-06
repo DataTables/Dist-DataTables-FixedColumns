@@ -18,7 +18,7 @@
 			}
 		};
 
-		if (typeof window !== 'undefined') {
+		if (typeof window === 'undefined') {
 			module.exports = function (root, $) {
 				if ( ! root ) {
 					// CommonJS environments without a window global must pass a
@@ -62,7 +62,7 @@ var DataTable = $.fn.dataTable;
             var _this = this;
             // Check that the required version of DataTables is included
             if (!dataTable || !dataTable.versionCheck || !dataTable.versionCheck('1.10.0')) {
-                throw new Error('StateRestore requires DataTables 1.10 or newer');
+                throw new Error('FixedColumns requires DataTables 1.10 or newer');
             }
             var table = new dataTable.Api(settings);
             this.classes = $$1.extend(true, {}, FixedColumns.classes);
@@ -118,15 +118,16 @@ var DataTable = $.fn.dataTable;
                 this._setKeyTableListener();
             }
             else {
-                table.one('init.dt', function () {
+                table.one('init.dt.dtfc', function () {
                     // Fixed Columns Initialisation
                     _this._addStyles();
                     _this._setKeyTableListener();
                 });
             }
-            table.on('column-sizing.dt', function () { return _this._addStyles(); });
+            table.on('column-sizing.dt.dtfc', function () { return _this._addStyles(); });
             // Make class available through dt object
             table.settings()[0]._fixedColumns = this;
+            table.on('destroy', function () { return _this._destroy(); });
             return this;
         }
         /**
@@ -395,6 +396,16 @@ var DataTable = $.fn.dataTable;
             }
         };
         /**
+         * Clean up
+         */
+        FixedColumns.prototype._destroy = function () {
+            this.s.dt.off('.dtfc');
+            this.dom.leftBottomBlocker.remove();
+            this.dom.leftTopBlocker.remove();
+            this.dom.rightBottomBlocker.remove();
+            this.dom.rightTopBlocker.remove();
+        };
+        /**
          * Gets the correct CSS for the cell, header or footer based on options provided
          *
          * @param header Whether this cell is a header or a footer
@@ -458,7 +469,7 @@ var DataTable = $.fn.dataTable;
         };
         FixedColumns.prototype._setKeyTableListener = function () {
             var _this = this;
-            this.s.dt.on('key-focus', function (e, dt, cell) {
+            this.s.dt.on('key-focus.dt.dtfc', function (e, dt, cell) {
                 var cellPos = $$1(cell.node()).offset();
                 var scroll = $$1($$1(_this.s.dt.table().node()).closest('div.dataTables_scrollBody'));
                 // If there are fixed columns to the left
@@ -492,13 +503,13 @@ var DataTable = $.fn.dataTable;
             });
             // Whenever a draw occurs there is potential for the data to have changed and therefore also the column widths
             // Therefore it is necessary to recalculate the values for the fixed columns
-            this.s.dt.on('draw', function () {
+            this.s.dt.on('draw.dt.dtfc', function () {
                 _this._addStyles();
             });
-            this.s.dt.on('column-reorder', function () {
+            this.s.dt.on('column-reorder.dt.dtfc', function () {
                 _this._addStyles();
             });
-            this.s.dt.on('column-visibility', function (e, settings, column, state, recalc) {
+            this.s.dt.on('column-visibility.dt.dtfc', function (e, settings, column, state, recalc) {
                 if (recalc && !settings.bDestroying) {
                     setTimeout(function () {
                         _this._addStyles();
