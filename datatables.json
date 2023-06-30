@@ -9,19 +9,11 @@
     ],
     "css": [],
     "types": [
-        "types/fixedColumns.bootstrap4.d.ts",
-        "types/fixedColumns.bootstrap5.d.ts",
-        "types/fixedColumns.bootstrap.d.ts",
-        "types/fixedColumns.bulma.d.ts",
-        "types/fixedColumns.dataTables.d.ts",
         "types/FixedColumns.d.ts",
-        "types/fixedColumns.foundation.d.ts",
-        "types/fixedColumns.jqueryui.d.ts",
-        "types/fixedColumns.semanticui.d.ts",
         "types/index.d.ts",
         "types/types.d.ts"
     ],
     "src-repo": "http://github.com/DataTables/FixedColumns",
     "last-tag": "4.2.2",
-    "last-sync": "b8e4c91071d6f022f591bef6220fae532d45f9c7"
+    "last-sync": ""
 }
