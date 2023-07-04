@@ -1,4 +1,4 @@
-/*! FixedColumns 4.3.0-dev
+/*! FixedColumns 4.3.0
  * © SpryMedia Ltd - datatables.net/license
  */
 export {};

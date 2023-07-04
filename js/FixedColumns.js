@@ -458,7 +458,7 @@ var FixedColumns = /** @class */ (function () {
             }
         });
     };
-    FixedColumns.version = '4.3.0-dev';
+    FixedColumns.version = '4.3.0';
     FixedColumns.classes = {
         fixedLeft: 'dtfc-fixed-left',
         fixedRight: 'dtfc-fixed-right',
