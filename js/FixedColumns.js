@@ -420,7 +420,11 @@ var FixedColumns = /** @class */ (function () {
                 var rightMostPos = rightMost.offset();
                 var rightMostWidth = rightMost.outerWidth();
                 // If the current highlighted cell is left of the rightmost cell on the screen
-                if (cellPos.left < rightMostPos.left + rightMostWidth) {
+                if ($(cell.node()).hasClass(_this.classes.fixedLeft)) {
+                    // Fixed columns have the scrollbar at the start, always
+                    scroll.scrollLeft(0);
+                }
+                else if (cellPos.left < rightMostPos.left + rightMostWidth) {
                     // Scroll it into view
                     var currScroll = scroll.scrollLeft();
                     scroll.scrollLeft(currScroll - (rightMostPos.left + rightMostWidth - cellPos.left));
@@ -435,7 +439,10 @@ var FixedColumns = /** @class */ (function () {
                 var leftMost = $(_this.s.dt.column(numCols - _this.c.right).header());
                 var leftMostPos = leftMost.offset();
                 // If the current highlighted cell is right of the leftmost cell on the screen
-                if (cellPos.left + cellWidth > leftMostPos.left) {
+                if ($(cell.node()).hasClass(_this.classes.fixedRight)) {
+                    scroll.scrollLeft(scroll[0].scrollWidth - scroll[0].clientWidth);
+                }
+                else if (cellPos.left + cellWidth > leftMostPos.left) {
                     // Scroll it into view
                     var currScroll = scroll.scrollLeft();
                     scroll.scrollLeft(currScroll - (leftMostPos.left - (cellPos.left + cellWidth)));
@@ -458,7 +465,7 @@ var FixedColumns = /** @class */ (function () {
             }
         });
     };
-    FixedColumns.version = '4.3.0';
+    FixedColumns.version = '4.3.1-dev';
     FixedColumns.classes = {
         fixedLeft: 'dtfc-fixed-left',
         fixedRight: 'dtfc-fixed-right',
