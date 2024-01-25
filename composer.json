@@ -1,5 +1,4 @@
 {
-    "version": "4.1.0",
     "name": "datatables.net/datatables.net-fixedcolumns",
     "description": "FixedColumns provides the ability to fix one or more columns to the left and / or right hand side of a DataTable that scrolls along the x-axis. This can be used if the columns show grouping, index or similar information. This is FixedColumns for DataTables",
     "support": {
