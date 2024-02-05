@@ -1,63 +1,43 @@
 var $;
-var dataTable;
+var DataTable;
 export function setJQuery(jq) {
     $ = jq;
-    dataTable = $.fn.dataTable;
+    DataTable = $.fn.dataTable;
 }
 var FixedColumns = /** @class */ (function () {
     function FixedColumns(settings, opts) {
         var _this = this;
         // Check that the required version of DataTables is included
-        if (!dataTable || !dataTable.versionCheck || !dataTable.versionCheck('1.10.0')) {
-            throw new Error('FixedColumns requires DataTables 1.10 or newer');
+        if (!DataTable ||
+            !DataTable.versionCheck ||
+            !DataTable.versionCheck('2')) {
+            throw new Error('FixedColumns requires DataTables 2 or newer');
         }
-        var table = new dataTable.Api(settings);
+        var table = new DataTable.Api(settings);
         this.classes = $.extend(true, {}, FixedColumns.classes);
         // Get options from user
         this.c = $.extend(true, {}, FixedColumns.defaults, opts);
-        // Backwards compatibility for deprecated leftColumns
-        if ((!opts || opts.left === undefined) && this.c.leftColumns !== undefined) {
-            this.c.left = this.c.leftColumns;
-        }
-        // Backwards compatibility for deprecated rightColumns
-        if ((!opts || opts.right === undefined) && this.c.rightColumns !== undefined) {
-            this.c.right = this.c.rightColumns;
-        }
         this.s = {
-            barWidth: 0,
             dt: table,
-            rtl: $('body').css('direction') === 'rtl'
+            rtl: $(table.table().node()).css('direction') === 'rtl'
         };
-        // Common CSS for all blockers
-        var blockerCSS = {
-            'bottom': '0px',
-            'display': 'block',
-            'position': 'absolute',
-            'width': this.s.barWidth + 1 + 'px'
-        };
+        // Backwards compatibility for deprecated options
+        if (opts && opts.leftColumns !== undefined) {
+            opts.left = opts.leftColumns;
+        }
+        if (opts && opts.left !== undefined) {
+            this.c[this.s.rtl ? 'end' : 'start'] = opts.left;
+        }
+        if (opts && opts.rightColumns !== undefined) {
+            opts.right = opts.rightColumns;
+        }
+        if (opts && opts.right !== undefined) {
+            this.c[this.s.rtl ? 'start' : 'end'] = opts.right;
+        }
         this.dom = {
-            leftBottomBlocker: $('<div>')
-                .css(blockerCSS)
-                .css('left', 0)
-                .addClass(this.classes.leftBottomBlocker),
-            leftTopBlocker: $('<div>')
-                .css(blockerCSS)
-                .css({
-                left: 0,
-                top: 0
-            })
-                .addClass(this.classes.leftTopBlocker),
-            rightBottomBlocker: $('<div>')
-                .css(blockerCSS)
-                .css('right', 0)
-                .addClass(this.classes.rightBottomBlocker),
-            rightTopBlocker: $('<div>')
-                .css(blockerCSS)
-                .css({
-                right: 0,
-                top: 0
-            })
-                .addClass(this.classes.rightTopBlocker)
+            bottomBlocker: $('<div>').addClass(this.classes.bottomBlocker),
+            topBlocker: $('<div>').addClass(this.classes.topBlocker),
+            scroller: $('div.dt-scroll-body', this.s.dt.table().container())
         };
         if (this.s.dt.settings()[0]._bInitComplete) {
             // Fixed Columns Initialisation
@@ -71,269 +51,138 @@ var FixedColumns = /** @class */ (function () {
                 _this._setKeyTableListener();
             });
         }
-        table.on('column-sizing.dt.dtfc', function () { return _this._addStyles(); });
+        // Lots or reasons to redraw the column styles
+        table.on('column-sizing.dt.dtfc column-reorder.dt.dtfc draw.dt.dtfc', function () { return _this._addStyles(); });
+        // Column visibility can trigger a number of times quickly, so we debounce it
+        var debounced = DataTable.util.debounce(function () {
+            _this._addStyles();
+        }, 50);
+        table.on('column-visibility.dt.dtfc', function () {
+            debounced();
+        });
+        // Add classes to indicate scrolling state for styling
+        this.dom.scroller.on('scroll.dtfc', function () { return _this._scroll(); });
+        this._scroll();
         // Make class available through dt object
         table.settings()[0]._fixedColumns = this;
         table.on('destroy', function () { return _this._destroy(); });
         return this;
     }
-    FixedColumns.prototype.left = function (newVal) {
+    FixedColumns.prototype.end = function (newVal) {
         // If the value is to change
         if (newVal !== undefined) {
             if (newVal >= 0 && newVal <= this.s.dt.columns().count()) {
                 // Set the new values and redraw the columns
-                this.c.left = newVal;
+                this.c.end = newVal;
                 this._addStyles();
             }
             return this;
         }
-        return this.c.left;
+        return this.c.end;
     };
-    FixedColumns.prototype.right = function (newVal) {
+    /**
+     * Left fix - accounting for RTL
+     *
+     * @param count Columns to fix, or undefined for getter
+     */
+    FixedColumns.prototype.left = function (count) {
+        return this.s.rtl
+            ? this.end(count)
+            : this.start(count);
+    };
+    /**
+     * Right fix - accounting for RTL
+     *
+     * @param count Columns to fix, or undefined for getter
+     */
+    FixedColumns.prototype.right = function (count) {
+        return this.s.rtl
+            ? this.start(count)
+            : this.end(count);
+    };
+    FixedColumns.prototype.start = function (newVal) {
         // If the value is to change
         if (newVal !== undefined) {
             if (newVal >= 0 && newVal <= this.s.dt.columns().count()) {
                 // Set the new values and redraw the columns
-                this.c.right = newVal;
+                this.c.start = newVal;
                 this._addStyles();
             }
             return this;
         }
-        return this.c.right;
+        return this.c.start;
     };
     /**
      * Iterates over the columns, fixing the appropriate ones to the left and right
      */
     FixedColumns.prototype._addStyles = function () {
-        // Set the bar width if vertical scrolling is enabled
-        if (this.s.dt.settings()[0].oScroll.sY) {
-            var scroll_1 = $(this.s.dt.table().node()).closest('div.dataTables_scrollBody')[0];
-            var barWidth = this.s.dt.settings()[0].oBrowser.barWidth;
-            if (scroll_1.offsetWidth - scroll_1.clientWidth >= barWidth) {
-                this.s.barWidth = barWidth;
+        var dt = this.s.dt;
+        var that = this;
+        var colCount = this.s.dt.columns(':visible').count();
+        var headerStruct = dt.table().header.structure(':visible');
+        var footerStruct = dt.table().footer.structure(':visible');
+        var widths = dt.columns(':visible').widths().toArray();
+        var wrapper = $(dt.table().node()).closest('div.dt-scroll');
+        var scroller = $(dt.table().node()).closest('div.dt-scroll-body')[0];
+        var rtl = this.s.rtl;
+        var start = this.c.start;
+        var end = this.c.end;
+        var left = rtl ? end : start;
+        var right = rtl ? start : end;
+        var barWidth = dt.settings()[0].oBrowser.barWidth; // dt internal
+        // Do nothing if no scrolling in the DataTable
+        if (wrapper.length === 0) {
+            return this;
+        }
+        // Bar not needed - no vertical scrolling
+        if (scroller.offsetWidth === scroller.clientWidth) {
+            barWidth = 0;
+        }
+        // Loop over the visible columns, setting their state
+        dt.columns(':visible').every(function (colIdx) {
+            var visIdx = dt.column.index('toVisible', colIdx);
+            var offset;
+            if (visIdx < start) {
+                // Fix to the start
+                offset = that._sum(widths, visIdx);
+                that._fixColumn(visIdx, offset, 'start', headerStruct, footerStruct, barWidth);
+            }
+            else if (visIdx >= colCount - end) {
+                // Fix to the end
+                offset = that._sum(widths, colCount - visIdx - 1, true);
+                that._fixColumn(visIdx, offset, 'end', headerStruct, footerStruct, barWidth);
             }
             else {
-                this.s.barWidth = 0;
+                // Release
+                that._fixColumn(visIdx, 0, 'none', headerStruct, footerStruct, barWidth);
             }
-            this.dom.rightTopBlocker.css('width', this.s.barWidth + 1);
-            this.dom.leftTopBlocker.css('width', this.s.barWidth + 1);
-            this.dom.rightBottomBlocker.css('width', this.s.barWidth + 1);
-            this.dom.leftBottomBlocker.css('width', this.s.barWidth + 1);
-        }
-        var parentDiv = null;
-        // Get the header and it's height
-        var header = this.s.dt.column(0).header();
-        var headerHeight = null;
-        if (header !== null) {
-            header = $(header);
-            headerHeight = header.outerHeight() + 1;
-            parentDiv = $(header.closest('div.dataTables_scroll')).css('position', 'relative');
-        }
-        // Get the footer and it's height
-        var footer = this.s.dt.column(0).footer();
-        var footerHeight = null;
-        if (footer !== null) {
-            footer = $(footer);
-            footerHeight = footer.outerHeight();
-            // Only attempt to retrieve the parentDiv if it has not been retrieved already
-            if (parentDiv === null) {
-                parentDiv = $(footer.closest('div.dataTables_scroll')).css('position', 'relative');
-            }
-        }
-        // Get the number of columns in the table - this is used often so better to only make 1 api call
-        var numCols = this.s.dt.columns().data().toArray().length;
-        // Tracker for the number of pixels should be left to the left of the table
-        var distLeft = 0;
-        // Sometimes the headers have slightly different widths so need to track them individually
-        var headLeft = 0;
-        // Get all of the row elements in the table
-        var rows = $(this.s.dt.table().node()).children('tbody').children('tr');
-        var invisibles = 0;
-        // When working from right to left we need to know how many are invisible before a point,
-        // without including those that are invisible after
-        var prevInvisible = new Map();
-        // Iterate over all of the columns
-        for (var i = 0; i < numCols; i++) {
-            var column = this.s.dt.column(i);
-            // Set the map for the previous column
-            if (i > 0) {
-                prevInvisible.set(i - 1, invisibles);
-            }
-            if (!column.visible()) {
-                invisibles++;
-                continue;
-            }
-            // Get the columns header and footer element
-            var colHeader = $(column.header());
-            var colFooter = $(column.footer());
-            // If i is less than the value of left then this column should be fixed left
-            if (i - invisibles < this.c.left) {
-                $(this.s.dt.table().node()).addClass(this.classes.tableFixedLeft);
-                parentDiv.addClass(this.classes.tableFixedLeft);
-                // Add the width of the previous node - only if we are on atleast the second column
-                if (i - invisibles > 0) {
-                    var prevIdx = i;
-                    // Simply using the number of hidden columns doesn't work here,
-                    // if the first is hidden then this would be thrown off
-                    while (prevIdx + 1 < numCols) {
-                        var prevCol = this.s.dt.column(prevIdx - 1, { page: 'current' });
-                        if (prevCol.visible()) {
-                            distLeft += $(prevCol.nodes()[0]).outerWidth();
-                            headLeft += prevCol.header() ?
-                                $(prevCol.header()).outerWidth() :
-                                prevCol.footer() ?
-                                    $(prevCol.header()).outerWidth() :
-                                    0;
-                            break;
-                        }
-                        prevIdx--;
-                    }
-                }
-                // Iterate over all of the rows, fixing the cell to the left
-                for (var _i = 0, rows_1 = rows; _i < rows_1.length; _i++) {
-                    var row = rows_1[_i];
-                    $($(row).children()[i - invisibles])
-                        .css(this._getCellCSS(false, distLeft, 'left'))
-                        .addClass(this.classes.fixedLeft);
-                }
-                // Add the css for the header and the footer
-                colHeader
-                    .css(this._getCellCSS(true, headLeft, 'left'))
-                    .addClass(this.classes.fixedLeft);
-                colFooter
-                    .css(this._getCellCSS(true, headLeft, 'left'))
-                    .addClass(this.classes.fixedLeft);
-            }
-            else {
-                // Iteriate through all of the rows, making sure they aren't currently trying to fix left
-                for (var _a = 0, rows_2 = rows; _a < rows_2.length; _a++) {
-                    var row = rows_2[_a];
-                    var cell = $($(row).children()[i - invisibles]);
-                    // If the cell is trying to fix to the left, remove the class and the css
-                    if (cell.hasClass(this.classes.fixedLeft)) {
-                        cell
-                            .css(this._clearCellCSS('left'))
-                            .removeClass(this.classes.fixedLeft);
-                    }
-                }
-                // Make sure the header for this column isn't fixed left
-                if (colHeader.hasClass(this.classes.fixedLeft)) {
-                    colHeader
-                        .css(this._clearCellCSS('left'))
-                        .removeClass(this.classes.fixedLeft);
-                }
-                // Make sure the footer for this column isn't fixed left
-                if (colFooter.hasClass(this.classes.fixedLeft)) {
-                    colFooter
-                        .css(this._clearCellCSS('left'))
-                        .removeClass(this.classes.fixedLeft);
-                }
-            }
-        }
-        var distRight = 0;
-        var headRight = 0;
-        // Counter for the number of invisible columns so far
-        var rightInvisibles = 0;
-        for (var i = numCols - 1; i >= 0; i--) {
-            var column = this.s.dt.column(i);
-            // If a column is invisible just skip it
-            if (!column.visible()) {
-                rightInvisibles++;
-                continue;
-            }
-            // Get the columns header and footer element
-            var colHeader = $(column.header());
-            var colFooter = $(column.footer());
-            // Get the number of visible columns that came before this one
-            var prev = prevInvisible.get(i);
-            if (prev === undefined) {
-                // If it wasn't set then it was the last column so just use the final value
-                prev = invisibles;
-            }
-            if (i + rightInvisibles >= numCols - this.c.right) {
-                $(this.s.dt.table().node()).addClass(this.classes.tableFixedRight);
-                parentDiv.addClass(this.classes.tableFixedRight);
-                // Add the widht of the previous node, only if we are on atleast the second column
-                if (i + 1 + rightInvisibles < numCols) {
-                    var prevIdx = i;
-                    // Simply using the number of hidden columns doesn't work here,
-                    // if the first is hidden then this would be thrown off
-                    while (prevIdx + 1 < numCols) {
-                        var prevCol = this.s.dt.column(prevIdx + 1, { page: 'current' });
-                        if (prevCol.visible()) {
-                            distRight += $(prevCol.nodes()[0]).outerWidth();
-                            headRight += prevCol.header() ?
-                                $(prevCol.header()).outerWidth() :
-                                prevCol.footer() ?
-                                    $(prevCol.header()).outerWidth() :
-                                    0;
-                            break;
-                        }
-                        prevIdx++;
-                    }
-                }
-                // Iterate over all of the rows, fixing the cell to the right
-                for (var _b = 0, rows_3 = rows; _b < rows_3.length; _b++) {
-                    var row = rows_3[_b];
-                    $($(row).children()[i - prev])
-                        .css(this._getCellCSS(false, distRight, 'right'))
-                        .addClass(this.classes.fixedRight);
-                }
-                // Add the css for the header and the footer
-                colHeader
-                    .css(this._getCellCSS(true, headRight, 'right'))
-                    .addClass(this.classes.fixedRight);
-                colFooter
-                    .css(this._getCellCSS(true, headRight, 'right'))
-                    .addClass(this.classes.fixedRight);
-            }
-            else {
-                // Iteriate through all of the rows, making sure they aren't currently trying to fix right
-                for (var _c = 0, rows_4 = rows; _c < rows_4.length; _c++) {
-                    var row = rows_4[_c];
-                    var cell = $($(row).children()[i - prev]);
-                    // If the cell is trying to fix to the right, remove the class and the css
-                    if (cell.hasClass(this.classes.fixedRight)) {
-                        cell
-                            .css(this._clearCellCSS('right'))
-                            .removeClass(this.classes.fixedRight);
-                    }
-                }
-                // Make sure the header for this column isn't fixed right
-                if (colHeader.hasClass(this.classes.fixedRight)) {
-                    colHeader
-                        .css(this._clearCellCSS('right'))
-                        .removeClass(this.classes.fixedRight);
-                }
-                // Make sure the footer for this column isn't fixed right
-                if (colFooter.hasClass(this.classes.fixedRight)) {
-                    colFooter
-                        .css(this._clearCellCSS('right'))
-                        .removeClass(this.classes.fixedRight);
-                }
-            }
-        }
-        // If there is a header with the index class and reading rtl then add right top blocker
-        if (header) {
-            if (!this.s.rtl) {
-                this.dom.rightTopBlocker.outerHeight(headerHeight);
-                parentDiv.append(this.dom.rightTopBlocker);
-            }
-            else {
-                this.dom.leftTopBlocker.outerHeight(headerHeight);
-                parentDiv.append(this.dom.leftTopBlocker);
-            }
-        }
-        // If there is a footer with the index class and reading rtl then add right bottom blocker
-        if (footer) {
-            if (!this.s.rtl) {
-                this.dom.rightBottomBlocker.outerHeight(footerHeight);
-                parentDiv.append(this.dom.rightBottomBlocker);
-            }
-            else {
-                this.dom.leftBottomBlocker.outerHeight(footerHeight);
-                parentDiv.append(this.dom.leftBottomBlocker);
-            }
+        });
+        // Apply classes to table to indicate what state we are in
+        $(dt.table().node())
+            .toggleClass(that.classes.tableFixedStart, start > 0)
+            .toggleClass(that.classes.tableFixedEnd, end > 0)
+            .toggleClass(that.classes.tableFixedLeft, left > 0)
+            .toggleClass(that.classes.tableFixedRight, right > 0);
+        // Blocker elements for when scroll bars are always visible
+        var headerEl = dt.table().header();
+        var footerEl = dt.table().footer();
+        var headerHeight = $(headerEl).outerHeight();
+        var footerHeight = $(footerEl).outerHeight();
+        this.dom.topBlocker
+            .appendTo(wrapper)
+            .css('top', 0)
+            .css(this.s.rtl ? 'left' : 'right', 0)
+            .css('height', headerHeight)
+            .css('width', barWidth + 1)
+            .css('display', barWidth ? 'block' : 'none');
+        if (footerEl) {
+            this.dom.bottomBlocker
+                .appendTo(wrapper)
+                .css('bottom', 0)
+                .css(this.s.rtl ? 'left' : 'right', 0)
+                .css('height', footerHeight)
+                .css('width', barWidth + 1)
+                .css('display', barWidth ? 'block' : 'none');
         }
     };
     /**
@@ -341,82 +190,102 @@ var FixedColumns = /** @class */ (function () {
      */
     FixedColumns.prototype._destroy = function () {
         this.s.dt.off('.dtfc');
-        this.dom.leftBottomBlocker.remove();
-        this.dom.leftTopBlocker.remove();
-        this.dom.rightBottomBlocker.remove();
-        this.dom.rightTopBlocker.remove();
+        this.dom.scroller.off('.dtfc');
+        $(this.s.dt.table().node())
+            .removeClass(this.classes.tableScrollingEnd + ' ' +
+            this.classes.tableScrollingLeft + ' ' +
+            this.classes.tableScrollingStart + ' ' +
+            this.classes.tableScrollingRight);
+        this.dom.bottomBlocker.remove();
+        this.dom.topBlocker.remove();
     };
     /**
-     * Gets the correct CSS for the cell, header or footer based on options provided
+     * Fix or unfix a column
      *
-     * @param header Whether this cell is a header or a footer
-     * @param dist The distance that the cell should be moved away from the edge
-     * @param lr Indicator of fixing to the left or the right
-     * @returns An object containing the correct css
+     * @param idx Column visible index to operate on
+     * @param offset Offset from the start (pixels)
+     * @param side start, end or none to unfix a column
+     * @param header DT header structure object
+     * @param footer DT footer structure object
      */
-    FixedColumns.prototype._getCellCSS = function (header, dist, lr) {
-        if (lr === 'left') {
-            return this.s.rtl
-                ? {
-                    position: 'sticky',
-                    right: dist + 'px'
+    FixedColumns.prototype._fixColumn = function (idx, offset, side, header, footer, barWidth) {
+        var _this = this;
+        var dt = this.s.dt;
+        var applyStyles = function (jq, part) {
+            if (side === 'none') {
+                jq.css('position', '')
+                    .css('left', '')
+                    .css('right', '')
+                    .removeClass(_this.classes.fixedEnd + ' ' +
+                    _this.classes.fixedLeft + ' ' +
+                    _this.classes.fixedRight + ' ' +
+                    _this.classes.fixedStart);
+            }
+            else {
+                var positionSide = side === 'start' ? 'left' : 'right';
+                if (_this.s.rtl) {
+                    positionSide = side === 'start' ? 'right' : 'left';
                 }
-                : {
-                    left: dist + 'px',
-                    position: 'sticky'
-                };
-        }
-        else {
-            return this.s.rtl
-                ? {
-                    left: dist + (header ? this.s.barWidth : 0) + 'px',
-                    position: 'sticky'
+                var off = offset;
+                if (side === 'end' && (part === 'header' || part === 'footer')) {
+                    off += barWidth;
                 }
-                : {
-                    position: 'sticky',
-                    right: dist + (header ? this.s.barWidth : 0) + 'px'
-                };
+                jq.css('position', 'sticky')
+                    .css(positionSide, off)
+                    .addClass(side === 'start'
+                    ? _this.classes.fixedStart
+                    : _this.classes.fixedEnd)
+                    .addClass(positionSide === 'left'
+                    ? _this.classes.fixedLeft
+                    : _this.classes.fixedRight);
+            }
+        };
+        header.forEach(function (row) {
+            if (row[idx]) {
+                applyStyles($(row[idx].cell), 'header');
+            }
+        });
+        applyStyles(dt.column(idx + ':visible', { page: 'current' }).nodes().to$(), 'body');
+        if (footer) {
+            footer.forEach(function (row) {
+                if (row[idx]) {
+                    applyStyles($(row[idx].cell), 'footer');
+                }
+            });
         }
     };
     /**
-     * Gets the css that is required to clear the fixing to a side
-     *
-     * @param lr Indicator of fixing to the left or the right
-     * @returns An object containing the correct css
+     * Update classes on the table to indicate if the table is scrolling or not
      */
-    FixedColumns.prototype._clearCellCSS = function (lr) {
-        if (lr === 'left') {
-            return !this.s.rtl ?
-                {
-                    left: '',
-                    position: ''
-                } :
-                {
-                    position: '',
-                    right: ''
-                };
+    FixedColumns.prototype._scroll = function () {
+        var scroller = this.dom.scroller[0];
+        // Not a scrolling table
+        if (!scroller) {
+            return;
         }
-        else {
-            return !this.s.rtl ?
-                {
-                    position: '',
-                    right: ''
-                } :
-                {
-                    left: '',
-                    position: ''
-                };
-        }
+        var scrollLeft = scroller.scrollLeft; // 0 when fully scrolled left
+        var table = $(this.s.dt.table().node())
+            .add(this.s.dt.table().header().parentNode)
+            .add(this.s.dt.table().footer().parentNode);
+        var ltr = !this.s.rtl;
+        var scrollStart = scrollLeft !== 0;
+        var scrollEnd = scroller.scrollWidth > (scroller.clientWidth + Math.abs(scrollLeft) + 1); // extra 1 for Chrome
+        table.toggleClass(this.classes.tableScrollingStart, scrollStart);
+        table.toggleClass(this.classes.tableScrollingEnd, scrollEnd);
+        table.toggleClass(this.classes.tableScrollingLeft, (scrollStart && ltr) || (scrollEnd && !ltr));
+        table.toggleClass(this.classes.tableScrollingRight, (scrollEnd && ltr) || (scrollStart && !ltr));
     };
     FixedColumns.prototype._setKeyTableListener = function () {
         var _this = this;
         this.s.dt.on('key-focus.dt.dtfc', function (e, dt, cell) {
+            var currScroll;
             var cellPos = $(cell.node()).offset();
-            var scroll = $($(_this.s.dt.table().node()).closest('div.dataTables_scrollBody'));
+            var scroller = _this.dom.scroller[0];
+            var scroll = $($(_this.s.dt.table().node()).closest('div.dt-scroll-body'));
             // If there are fixed columns to the left
-            if (_this.c.left > 0) {
+            if (_this.c.start > 0) {
                 // Get the rightmost left fixed column header, it's position and it's width
-                var rightMost = $(_this.s.dt.column(_this.c.left - 1).header());
+                var rightMost = $(_this.s.dt.column(_this.c.start - 1).header());
                 var rightMostPos = rightMost.offset();
                 var rightMostWidth = rightMost.outerWidth();
                 // If the current highlighted cell is left of the rightmost cell on the screen
@@ -426,62 +295,69 @@ var FixedColumns = /** @class */ (function () {
                 }
                 else if (cellPos.left < rightMostPos.left + rightMostWidth) {
                     // Scroll it into view
-                    var currScroll = scroll.scrollLeft();
-                    scroll.scrollLeft(currScroll - (rightMostPos.left + rightMostWidth - cellPos.left));
+                    currScroll = scroll.scrollLeft();
+                    scroll.scrollLeft(currScroll -
+                        (rightMostPos.left + rightMostWidth - cellPos.left));
                 }
             }
             // If there are fixed columns to the right
-            if (_this.c.right > 0) {
+            if (_this.c.end > 0) {
                 // Get the number of columns and the width of the cell as doing right side calc
                 var numCols = _this.s.dt.columns().data().toArray().length;
                 var cellWidth = $(cell.node()).outerWidth();
                 // Get the leftmost right fixed column header and it's position
-                var leftMost = $(_this.s.dt.column(numCols - _this.c.right).header());
+                var leftMost = $(_this.s.dt.column(numCols - _this.c.end).header());
                 var leftMostPos = leftMost.offset();
                 // If the current highlighted cell is right of the leftmost cell on the screen
                 if ($(cell.node()).hasClass(_this.classes.fixedRight)) {
-                    scroll.scrollLeft(scroll[0].scrollWidth - scroll[0].clientWidth);
+                    scroll.scrollLeft(scroller.scrollWidth - scroller.clientWidth);
                 }
                 else if (cellPos.left + cellWidth > leftMostPos.left) {
                     // Scroll it into view
-                    var currScroll = scroll.scrollLeft();
-                    scroll.scrollLeft(currScroll - (leftMostPos.left - (cellPos.left + cellWidth)));
+                    currScroll = scroll.scrollLeft();
+                    scroll.scrollLeft(currScroll -
+                        (leftMostPos.left - (cellPos.left + cellWidth)));
                 }
             }
         });
-        // Whenever a draw occurs there is potential for the data to have changed and therefore also the column widths
-        // Therefore it is necessary to recalculate the values for the fixed columns
-        this.s.dt.on('draw.dt.dtfc', function () {
-            _this._addStyles();
-        });
-        this.s.dt.on('column-reorder.dt.dtfc', function () {
-            _this._addStyles();
-        });
-        this.s.dt.on('column-visibility.dt.dtfc', function (e, settings, column, state, recalc) {
-            if (recalc && !settings.bDestroying) {
-                setTimeout(function () {
-                    _this._addStyles();
-                }, 50);
-            }
-        });
     };
-    FixedColumns.version = '4.3.1-dev';
+    /**
+     * Sum a range of values from an array
+     *
+     * @param widths
+     * @param index
+     * @returns
+     */
+    FixedColumns.prototype._sum = function (widths, index, reverse) {
+        if (reverse === void 0) { reverse = false; }
+        if (reverse) {
+            widths = widths.slice().reverse();
+        }
+        return widths.slice(0, index).reduce(function (accum, val) { return accum + val; }, 0);
+    };
+    FixedColumns.version = '5.0.0';
     FixedColumns.classes = {
+        bottomBlocker: 'dtfc-bottom-blocker',
+        fixedEnd: 'dtfc-fixed-end',
         fixedLeft: 'dtfc-fixed-left',
         fixedRight: 'dtfc-fixed-right',
-        leftBottomBlocker: 'dtfc-left-bottom-blocker',
-        leftTopBlocker: 'dtfc-left-top-blocker',
-        rightBottomBlocker: 'dtfc-right-bottom-blocker',
-        rightTopBlocker: 'dtfc-right-top-blocker',
+        fixedStart: 'dtfc-fixed-start',
+        tableFixedEnd: 'dtfc-has-end',
         tableFixedLeft: 'dtfc-has-left',
-        tableFixedRight: 'dtfc-has-right'
+        tableFixedRight: 'dtfc-has-right',
+        tableFixedStart: 'dtfc-has-start',
+        tableScrollingEnd: 'dtfc-scrolling-end',
+        tableScrollingLeft: 'dtfc-scrolling-left',
+        tableScrollingRight: 'dtfc-scrolling-right',
+        tableScrollingStart: 'dtfc-scrolling-start',
+        topBlocker: 'dtfc-top-blocker'
     };
     FixedColumns.defaults = {
         i18n: {
             button: 'FixedColumns'
         },
-        left: 1,
-        right: 0
+        start: 1,
+        end: 0
     };
     return FixedColumns;
 }());
