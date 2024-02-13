@@ -276,10 +276,15 @@ let $ = jQuery;
             if (!scroller) {
                 return;
             }
-            var scrollLeft = scroller.scrollLeft; // 0 when fully scrolled left
+            // Need to update the classes on potentially multiple table tags. There is the
+            // main one, the scrolling ones and if FixedHeader is active, the holding
+            // position ones! jQuery will deduplicate for us.
             var table = $$1(this.s.dt.table().node())
                 .add(this.s.dt.table().header().parentNode)
-                .add(this.s.dt.table().footer().parentNode);
+                .add(this.s.dt.table().footer().parentNode)
+                .add('div.dt-scroll-headInner table', this.s.dt.table().container())
+                .add('div.dt-scroll-footInner table', this.s.dt.table().container());
+            var scrollLeft = scroller.scrollLeft; // 0 when fully scrolled left
             var ltr = !this.s.rtl;
             var scrollStart = scrollLeft !== 0;
             var scrollEnd = scroller.scrollWidth > (scroller.clientWidth + Math.abs(scrollLeft) + 1); // extra 1 for Chrome
