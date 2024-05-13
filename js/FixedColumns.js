@@ -139,9 +139,13 @@ var FixedColumns = /** @class */ (function () {
             barWidth = 0;
         }
         // Loop over the visible columns, setting their state
-        dt.columns(':visible').every(function (colIdx) {
+        dt.columns().every(function (colIdx) {
             var visIdx = dt.column.index('toVisible', colIdx);
             var offset;
+            // Skip the hidden columns
+            if (visIdx === null) {
+                return;
+            }
             if (visIdx < start) {
                 // Fix to the start
                 offset = that._sum(widths, visIdx);
