@@ -1,4 +1,4 @@
-/*! FixedColumns 5.0.0
+/*! FixedColumns 5.0.1
  * © SpryMedia Ltd - datatables.net/license
  */
 
@@ -397,7 +397,7 @@ var DataTable = $.fn.dataTable;
             }
             return widths.slice(0, index).reduce(function (accum, val) { return accum + val; }, 0);
         };
-        FixedColumns.version = '5.0.0';
+        FixedColumns.version = '5.0.1';
         FixedColumns.classes = {
             bottomBlocker: 'dtfc-bottom-blocker',
             fixedEnd: 'dtfc-fixed-end',
@@ -424,7 +424,7 @@ var DataTable = $.fn.dataTable;
         return FixedColumns;
     }());
 
-    /*! FixedColumns 5.0.0
+    /*! FixedColumns 5.0.1
      * © SpryMedia Ltd - datatables.net/license
      */
     setJQuery($);
