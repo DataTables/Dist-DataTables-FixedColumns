@@ -344,7 +344,7 @@ var FixedColumns = /** @class */ (function () {
         }
         return widths.slice(0, index).reduce(function (accum, val) { return accum + val; }, 0);
     };
-    FixedColumns.version = '5.0.1';
+    FixedColumns.version = '5.0.2';
     FixedColumns.classes = {
         bottomBlocker: 'dtfc-bottom-blocker',
         fixedEnd: 'dtfc-fixed-end',
