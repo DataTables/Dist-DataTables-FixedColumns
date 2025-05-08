@@ -85,7 +85,7 @@ DataTable.ext.buttons.fixedColumns = {
     },
     init: function (dt, node, config) {
         if (dt.settings()[0]._fixedColumns === undefined) {
-            _init(dt.settings(), config);
+            _init(dt.settings(), config.config);
         }
         $(node).attr('active', 'true').addClass('active');
         dt.button(node).text(config.text || dt.i18n('buttons.fixedColumns', dt.settings()[0]._fixedColumns.c.i18n.button));
