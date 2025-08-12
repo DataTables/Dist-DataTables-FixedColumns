@@ -10,7 +10,7 @@
         <license type="expression">MIT</license>
         <tags>FixedColumns  Datatables jQuery table</tags>
         <dependencies>
-            <dependency id="datatables.net" version="1.12.1"/>
+            <dependency id="datatables.net" version="2.3.2"/>
         </dependencies>
         <contentFiles>
             <files include="**/*" buildAction="Content"/>
@@ -25,6 +25,10 @@
         <file src="js/FixedColumns.js" target="contentFiles\any\any\wwwroot\js"/>
         <file src="js/index.js" target="content\Scripts"/>
         <file src="js/index.js" target="contentFiles\any\any\wwwroot\js"/>
+        <file src="js/dataTables.fixedColumns.min.mjs" target="content\Scripts"/>
+        <file src="js/dataTables.fixedColumns.min.mjs" target="contentFiles\any\any\wwwroot\js"/>
+        <file src="js/dataTables.fixedColumns.mjs" target="content\Scripts"/>
+        <file src="js/dataTables.fixedColumns.mjs" target="contentFiles\any\any\wwwroot\js"/>
     </files>
 </package>
 
