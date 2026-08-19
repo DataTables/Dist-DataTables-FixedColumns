@@ -120,7 +120,7 @@ declare class FixedColumns {
 }
 
 declare module 'datatables.net' {
-    interface Config {
+    interface Options {
         fixedColumns?: boolean | FixedColumnsConfig;
     }
     interface Defaults {
