@@ -44,14 +44,12 @@
 var Dom = DataTable.Dom;
 var util = DataTable.util;
 
+// Sanity check
+if (!DataTable || !DataTable.versionCheck('3.1')) {
+    throw 'Warning: FixedColumns requires DataTables 3.1 or newer';
+}
 class FixedColumns {
     constructor(settings, opts) {
-        // Check that the required version of DataTables is included
-        if (!DataTable ||
-            !DataTable.versionCheck ||
-            !DataTable.versionCheck('2')) {
-            throw new Error('FixedColumns requires DataTables 2 or newer');
-        }
         let table = new DataTable.Api(settings);
         this.classes = util.object.assignDeep({}, FixedColumns.classes);
         // Get options from user
@@ -509,7 +507,7 @@ function _init(settings, options = null) {
 }
 // Attach a listener to the document which listens for DataTables initialisation
 // events so we can automatically initialise
-Dom.s(document).on('plugin-init.dt', function (e, settings) {
+Dom.on('plugin-init.dt', function (e, settings) {
     if (e.namespace !== 'dt') {
         return;
     }
