@@ -1,14 +1,13 @@
 {
     "name": "datatables.net-fixedcolumns",
     "description": "FixedColumns for DataTables",
-    "main": "js/dataTables.fixedColumns.js",
-    "module": "js/dataTables.fixedColumns.mjs",
+    "main": "./js/dataTables.fixedColumns.js",
+    "module": "./js/dataTables.fixedColumns.mjs",
     "types": "./types/types.d.ts",
     "version": "6.0.0",
     "files": [
-        "js/**/*.js",
-        "js/**/*.mjs",
-        "types/**/*.d.ts"
+        "js",
+        "types"
     ],
     "keywords": [
         "FixedColumns",
@@ -30,5 +29,16 @@
     "repository": {
         "type": "git",
         "url": "git+https://github.com/DataTables/FixedColumns.git"
-    }
+    },
+    "exports": {
+        ".": {
+            "types": "./types/types.d.ts",
+            "import": "./js/dataTables.fixedColumns.mjs",
+            "default": "./js/dataTables.fixedColumns.mjs",
+            "require": "./js/dataTables.fixedColumns.js"
+        },
+        "./js/*": "./js/*",
+        "./package.json": "./package.json"
+    },
+    "sideEffects": true
 }
