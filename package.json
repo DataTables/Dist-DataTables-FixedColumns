@@ -34,8 +34,8 @@
         ".": {
             "types": "./types/types.d.ts",
             "import": "./js/dataTables.fixedColumns.mjs",
-            "default": "./js/dataTables.fixedColumns.mjs",
-            "require": "./js/dataTables.fixedColumns.js"
+            "require": "./js/dataTables.fixedColumns.js",
+            "default": "./js/dataTables.fixedColumns.mjs"
         },
         "./js/*": "./js/*",
         "./package.json": "./package.json"
