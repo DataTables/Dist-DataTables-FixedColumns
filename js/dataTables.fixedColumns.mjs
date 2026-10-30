@@ -1,4 +1,4 @@
-/*! FixedColumns 6.1.1 for DataTables
+/*! FixedColumns 6.1.2 for DataTables
  * Copyright (c) SpryMedia Ltd - datatables.net/license
  */
 
@@ -359,7 +359,7 @@ class FixedColumns {
         return widths.slice(0, index).reduce((accum, val) => accum + val, 0);
     }
 }
-FixedColumns.version = '6.1.1';
+FixedColumns.version = '6.1.2';
 FixedColumns.classes = {
     bottomBlocker: 'dtfc-bottom-blocker',
     fixedEnd: 'dtfc-fixed-end',
